@@ -73,6 +73,9 @@ export interface ExtensionMessage {
 		| "indexingStatusUpdate"
 		| "indexCleared"
 		| "codebaseIndexConfig"
+		| "uploadContentProcessed"
+		| "uploadContentError"
+		| "processedItemToFileRequest"
 	text?: string
 	action?:
 		| "chatButtonClicked"

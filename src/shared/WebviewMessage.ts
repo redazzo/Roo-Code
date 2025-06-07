@@ -147,6 +147,8 @@ export interface WebviewMessage {
 		| "indexingStatusUpdate"
 		| "indexCleared"
 		| "codebaseIndexConfig"
+		| "uploadContent"
+		| "processItemToFile"
 	text?: string
 	disabled?: boolean
 	askResponse?: ClineAskResponse

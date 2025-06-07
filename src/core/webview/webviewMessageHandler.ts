@@ -1433,5 +1433,93 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 			}
 			break
 		}
+		case "uploadContent": {
+			try {
+				if (message.values?.items) {
+					// Stub to upload the content
+				}
+
+				// Send the processed items back to the webview
+				provider.postMessageToWebview({
+					type: "uploadContentProcessed",
+					values: {
+						items: [],
+						ttl: "20",
+					},
+				})
+			} catch (error) {
+				provider.log(
+					`Error processing upload content: ${error instanceof Error ? error.message : String(error)}`,
+				)
+				provider.postMessageToWebview({
+					type: "uploadContentError",
+					text: error instanceof Error ? error.message : String(error),
+				})
+			}
+			break
+		}
+
+		case "processItemToFile": {
+			console.log("Processing item")
+			try {
+				if (message.values?.items) {
+					// Process the items to files
+
+					console.log("Processing item to file:", message.values.item)
+
+					//const { listFiles } = await import("../../services/glob/list-files")
+					const fs = await import("fs/promises")
+					const path = await import("path")
+					const thePathsArray = message.values.items
+
+					const entries = []
+
+					for (const providedPath of thePathsArray) {
+						console.log(`Processing provided path: ${providedPath}`)
+
+						let entry = {
+							entryType: "unknown", // Default to file
+							name: "unknown",
+							fullPath: "unknown",
+						}
+
+						try {
+							// First, check if the path exists and get its stats
+							const absolutePath = path.resolve(providedPath)
+							const stats = await fs.stat(providedPath)
+
+							entry.name = path.basename(absolutePath)
+							entry.fullPath = absolutePath
+
+							if (stats.isDirectory()) {
+								entry.entryType = "directory"
+							} else if (stats.isFile()) {
+								entry.entryType = "file"
+							} else {
+								entry.entryType = "unknown"
+							}
+
+							console.log(`Processed entry: ${JSON.stringify(entry)}`)
+						} catch (error) {
+							console.log(
+								`Error checking path stats: ${error instanceof Error ? error.message : String(error)}`,
+							)
+							entry.entryType = "unknown"
+						}
+
+						entries.push(entry)
+					}
+
+					// Send the processed items back to the webview
+					provider.postMessageToWebview({
+						type: "processedItemToFileRequest",
+						values: entries,
+					})
+				}
+			} catch (error) {
+				console.log(`Error processing item to file: ${error instanceof Error ? error.message : String(error)}`)
+			}
+			break
+		}
 	}
 }

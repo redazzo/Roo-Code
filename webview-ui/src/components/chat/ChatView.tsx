@@ -38,6 +38,7 @@ import ChatRow from "./ChatRow"
 import ChatTextArea from "./ChatTextArea"
 import TaskHeader from "./TaskHeader"
 import AutoApproveMenu from "./AutoApproveMenu"
+import UploadComponent from "../upload/UploadComponent"
 import SystemPromptWarning from "./SystemPromptWarning"
 import ProfileViolationWarning from "./ProfileViolationWarning"
 import { CheckpointWarning } from "./CheckpointWarning"
@@ -505,6 +506,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 						case "resume_task":
 						case "resume_completed_task":
 						case "mistake_limit_reached":
+						case "api_req_failed":
 							vscode.postMessage({ type: "askResponse", askResponse: "messageResponse", text, images })
 							break
 						// There is no other case that a textfield should be enabled.
@@ -1426,6 +1428,12 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 				</div>
 			)}
 
+			{!task && (
+				<div className="mb-[-2px] flex-initial min-h-0">
+					<UploadComponent />
+				</div>
+			)}
+
 			{task && (
 				<>
 					<div className="grow flex" ref={scrollContainerRef}>
@@ -1449,6 +1457,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 						/>
 					</div>
 					<AutoApproveMenu />
+					<UploadComponent />
 					{showScrollToBottom ? (
 						<div className="flex px-[15px] pt-[10px]">
 							<div
